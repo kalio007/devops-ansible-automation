@@ -1,0 +1,17 @@
+# app.service.j2
+
+[Unit]
+Description=Stage 5B Application
+After=network.target
+
+[Service]
+User={{ deploy_user }}
+WorkingDirectory={{ local_repo }}
+ExecStart={{ local_repo }}/{{ venv }}/bin/uvicorn main:app --host 127.0.0.1 --port {{ app_port }}
+Restart=always
+Environment="PATH={{ local_repo }}/{{ venv }}/bin"
+StandardOutput=file:{{ log_stdout }}
+StandardError=file:{{ log_stderr }}
+
+[Install]
+WantedBy=multi-user.target
