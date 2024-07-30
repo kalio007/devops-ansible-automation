@@ -295,15 +295,38 @@
       notify:
         - restart nginx
 
-    - name: Create log files
+    - name: Ensure Log files are present
       file:
-        path: "{{ log_stdout }}"
+        path: "{{ item }}"
         state: touch
-        owner: hng
-        group: hng
-      # with_items:
-      #   - error.log
-      #   - out.log
+        owner: "{{ deploy_user }}"
+        group: "{{ deploy_user }}"
+        mode: "0644"
+      with_items:
+        - "{{ log_stderr }}"
+        - "{{ log_stdout }}"
+
+    # - name: Create log files
+    #   file:
+    #     path: "{{ log_stdout }}"
+    #     state: touch
+    #     owner: hng
+    #     group: hng
+    #   # with_items:
+    #   #   - error.log
+    #   #   - out.log
+
+    - name: Verify log file creation and permissions
+      stat:
+        path: "{{ item }}"
+      register: log_file_stats
+      with_items:
+        - "{{ log_stderr }}"
+        - "{{ log_stdout }}"
+
+    - name: Output log file stats
+      debug:
+        var: log_file_stats
 
   handlers:
     - name: restart nginx
