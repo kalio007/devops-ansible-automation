@@ -295,38 +295,49 @@
       notify:
         - restart nginx
 
-    - name: Ensure Log files are present
-      file:
-        path: "{{ item }}"
-        state: touch
+    ######################## LOGGING ENDS ########################
+    - name: Log the output of all tasks
+      copy:
+        content: |
+          {{ hashed_password.stdout | default('No output captured for hashed_password') }}
+          {{ python3_venv_output.stdout | default('No output captured for python3_venv_output') }}
+          {{ python3_psycopg2_output.stdout | default('No output captured for python3_psycopg2_output') }}
+          {{ git_output.stdout | default('No output captured for git_output') }}
+          {{ venv_output.stdout | default('No output captured for venv_output') }}
+          {{ Activate_venv_output.stdout | default('No output captured for Activate_venv_output') }}
+          {{ pip_output.stdout | default('No output captured for pip_output') }}
+          {{ install_postgres_output.stdout | default('No output captured for install_postgres_output') }}
+          {{ postgres_service_output.stdout | default('No output captured for postgres_service_output') }}
+          {{ create_db_output.stdout | default('No output captured for create_db_output') }}
+          {{ create_admin_user_output.stdout | default('No output captured for create_admin_user_output') }}
+          {{ uvicorn_output.stdout | default('No output captured for uvicorn_output') }}
+          {{ nginx_repo_output.stdout | default('No output captured for nginx_repo_output') }}
+          {{ install_nginx_output.stdout | default('No output captured for install_nginx_output') }}
+        dest: "{{ log_stdout }}"
         owner: "{{ deploy_user }}"
         group: "{{ deploy_user }}"
         mode: "0644"
-      with_items:
-        - "{{ log_stderr }}"
-        - "{{ log_stdout }}"
 
-    # - name: Create log files
-    #   file:
-    #     path: "{{ log_stdout }}"
-    #     state: touch
-    #     owner: hng
-    #     group: hng
-    #   # with_items:
-    #   #   - error.log
-    #   #   - out.log
-
-    - name: Verify log file creation and permissions
-      stat:
-        path: "{{ item }}"
-      register: log_file_stats
-      with_items:
-        - "{{ log_stderr }}"
-        - "{{ log_stdout }}"
-
-    - name: Output log file stats
-      debug:
-        var: log_file_stats
+    - name: Log the error of all tasks
+      copy:
+        content: |
+          {{ python3_venv_output.stderr | default('No error captured for python3_venv_output') }}
+          {{ python3_psycopg2_output.stderr | default('No error captured for python3_psycopg2_output') }}
+          {{ git_output.stderr | default('No error captured for git_output') }}
+          {{ venv_output.stderr | default('No error captured for venv_output') }}
+          {{ Activate_venv_output.stderr | default('No error captured for Activate_venv_output') }}
+          {{ pip_output.stderr | default('No error captured for pip_output') }}
+          {{ install_postgres_output.stderr | default('No error captured for install_postgres_output') }}
+          {{ postgres_service_output.stderr | default('No error captured for postgres_service_output') }}
+          {{ create_db_output.stderr | default('No error captured for create_db_output') }}
+          {{ create_admin_user_output.stderr | default('No error captured for create_admin_user_output') }}
+          {{ uvicorn_output.stderr | default('No error captured for uvicorn_output') }}
+          {{ nginx_repo_output.stderr | default('No error captured for nginx_repo_output') }}
+          {{ install_nginx_output.stderr | default('No error captured for install_nginx_output') }}
+        dest: "{{ log_stderr }}"
+        owner: "{{ deploy_user }}"
+        group: "{{ deploy_user }}"
+        mode: "0644"
 
   handlers:
     - name: restart nginx
