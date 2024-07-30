@@ -295,25 +295,15 @@
       notify:
         - restart nginx
 
-    # - name: Ensure log files are owned by hng user
-    #   file:
-    #     path: "{{ item }}"
-    #     owner: "{{ deploy_user }}"
-    #     group: "{{ deploy_user }}"
-    #     state: touch
-    #     mode: "0644"
-    #   loop:
-    #     - "{{ log_dir }}/error.log"
-    #     - "{{ log_dir }}/out.log"
     - name: Create log files
       file:
-        path: "/var/log/stage_5b/{{ item }}"
+        path: "{{ log_stdout }}"
         state: touch
         owner: hng
         group: hng
-      with_items:
-        - error.log
-        - out.log
+      # with_items:
+      #   - error.log
+      #   - out.log
 
   handlers:
     - name: restart nginx
