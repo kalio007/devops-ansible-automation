@@ -1,60 +1,42 @@
-# Ansible Deployment for Boilerplate Application
+# Introduction
 
-## Overview
+This document outlines the steps involved in deploying a boilerplate application using Ansible. The process includes setting up the environment, installing dependencies, configuring the application, and establishing a reverse proxy.
 
-This Ansible playbook sets up a new instance of the assigned boilerplate application using Infrastructure as Code (IaC). The setup includes cloning the repository, deploying the application, installing dependencies, configuring PostgreSQL and a messaging queue, setting up Nginx for reverse proxy, and configuring logging.
+## Prerequisites
 
-## Requirements
+Ubuntu 22.04 server with Python 3.12
+Ansible installed
 
-- Ubuntu 22.04 server with Python 3.12
-- Ansible
+## Deployment Steps
 
-## Setup Instructions
+**Clone the Repository:**
 
-### 1. User and Directory Setup
+The Ansible playbook is cloned to the `/opt/stage_5b directory.`
 
-1. **Create a user named `hng` with sudo privileges:**
-   The playbook will handle this automatically.
+**User Setup:**
+A user named `hng` with sudo privileges is created.
 
-2. **Clone the repository:**
-   The repository will be cloned into the `/opt/stage_5b` directory and owned by the `hng` user.
+**Infrastructure Setup:**
+PostgreSQL is installed and configured.
+Required dependencies are installed.
+A messaging queue (e.g., RabbitMQ, Redis) is set up.
 
-### 2. Database and Dependencies
+## Application Deployment
 
-1. **Install PostgreSQL:**
-   PostgreSQL will be installed, and the admin credentials will be saved in `/var/secrets/pg_pw.txt`.
+The boilerplate application is deployed to the server.
+**Nginx Configuration:**
+Nginx is installed and configured to act as a reverse proxy for the application.
+Logging Setup:
 
-2. **Install Application Dependencies:**
-   All required dependencies, including databases and messaging queues, will be installed and configured.
+Logs for the application are configured to be written to specific files.
+Execution
+To deploy the application, run the following command:
 
-### 3. Application and Proxy Setup
+Bash
+```ansible-playbook main.yaml -b```
 
-1. **Run the Application:**
-   The application will be configured to run on `127.0.0.1:3000` without exposing port 3000 externally.
 
-2. **Install and Configure Nginx:**
-   Nginx version 1.26 will be installed and configured to reverse proxy requests from port 80 to the application running on port 3000.
+## Additional Notes
 
-### 4. Logging Configuration
-
-1. **Configure Logging:**
-   - Standard error logs will be saved in `/var/log/stage_5b/error.log`
-   - Standard output logs will be saved in `/var/log/stage_5b/out.log`
-   - Both log files will be owned by the `hng` user.
-
-## Execution
-
-To deploy the setup, run the following command:
-
-```bash
-ansible-playbook main.yaml -b
-```
-
-## Additional Information
-Ensure that your inventory file `inventory.cfg` specifies the host as `hng`
-For example,when configuring locally I used:
-
-```bash
-[hng]
-localhost ansible_connection=local ansible_become=true ansible_become_method=sudo ansible_become_flags='-H -S' ansible_remote_tmp=~/ansible_tmp ansible_python_interpreter=/usr/bin/python3
-```
+The inventory file inventory.cfg should contain a host named hng.
+For local testing, you can use the provided configuration in the inventory.cfg example.
